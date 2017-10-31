@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+        <!-- Import Product Wizard form -->
+        <record id="view_import_product" model="ir.ui.view">
+            <field name="name">import.product.form</field>
+            <field name="model">import.product</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Import Product">
+                    <group>
+                        <field name="name" />
+                        <field name="delimeter"/>
+                        <field name="data" filename="name"/>
+                    </group>
+                    <separator string="" colspan="4"/>
+                    <footer>
+                        <button class="oe_highlight" special="cancel" string="Cancel"/>
+                        <button name="action_import" string="Import" type="object"/>
+                    </footer>
+               </form>
+            </field>
+        </record>
+
+        <!--  Action of Import Prouc wizard -->
+
+        <record id="action_import_product" model="ir.actions.act_window">
+            <field name="name">Import Product</field>
+            <field name="res_model">import.product</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+           <field name="view_id" ref="view_import_product"/>
+           <field name="target">new</field>
+        </record>
+
+
+<!--     <menuitem  id="menu_import_inventory" name="Import Inventory" action="action_import_inventory" parent="stock.menu_stock_inventory_control"/> -->
+    </data>
+</openerp>
