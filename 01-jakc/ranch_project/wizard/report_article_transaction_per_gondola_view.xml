@@ -2,14 +2,15 @@
 <openerp>
     <data>
         <!--  Article Per Gondola -->
-        <record id="wizard_article_transaction_per_gondola" model="ir.ui.view">
-            <field name="name">Article Per Gondola</field>
-            <field name="model">wizard.article.transaction.per.gondola</field>
+        <record id="wizard_report_article_transaction_per_gondola" model="ir.ui.view">
+            <field name="name">Article By Gondola</field>
+            <field name="model">wizard.report.article.transaction.per.gondola</field>
             <field name="arch" type="xml">
-                <form string="Article Per Gondola">
+                <form string="Article By Gondola">
                     <group col="4" string="Dates">
                         <field name="stock_inventory_periode_id"/>
-                        <field name="gondola_id"/>
+                        <field name="iface_all_gondola"/>
+                        <field name="gondola_ids" widget="many2many_tags"/>
                     </group>
                     <footer>
                         <button name="print_report" type="object" string="Print Report" class="btn-primary"/>
@@ -20,15 +21,17 @@
         </record>
 
 
-        <record id="action_report_pos_details" model="ir.actions.act_window">
-            <field name="name">Sale Details</field>
+        <record id="act_wizard_report_article_per_gondola" model="ir.actions.act_window">
+            <field name="name">Article By Gondola</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">pos.details</field>
+            <field name="res_model">wizard.report.article.transaction.per.gondola</field>
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
         </record>
 
+
+        <menuitem  id="menu_article_transaction_per_gondola" name="Article By Gondola" action="act_wizard_report_article_per_gondola" parent="menu_stock_opname_report"/> -->
 
     </data>
 </openerp>

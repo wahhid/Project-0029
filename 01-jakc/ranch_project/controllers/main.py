@@ -16,7 +16,7 @@ _logger = logging.getLogger(__name__)
 
 class WebsiteWarehoue(http.Controller):
 
-    @http.route('/csv/download/sap/<int:periode_id>/', auth='user', website=True)
+    @http.route('/csv/download/sap/<int:periode_id>/', auth='public')
     def csvdownload(self, periode_id, **kw):
         return http.request.env['stock.inventory.periode']._sap_csv_download({'periode_id': periode_id})
 
