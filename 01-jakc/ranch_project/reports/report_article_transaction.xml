@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="article_transaction_external_layout">
+            <!-- Multicompany -->
+            <t t-if="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id"></t>
+            </t>
+            <t t-if="not o or not 'company_id' in o">
+                <t t-set="company" t-value="res_company"></t>
+            </t>
+            <t t-call="ranch_project.article_transaction_external_layout_header"/>
+            <t t-raw="0" />
+            <t t-call="ranch_project.article_transaction_external_layout_footer"/>
+        </template>
+
+        <template id="article_transaction_external_layout_header">
+            <div class="header">
+                <div class="row">
+                    <center>
+                        <h2>Product Transaction by Gondola</h2>
+                    </center>
+                </div>
+            </div>
+        </template>
+
+        <template id="article_transaction_external_layout_footer">
+            <div class="footer">
+            </div>
+        </template>
+
+        <template id="report_articletransaction">
+            <t t-call="report.html_container">
+                <t t-call="ranch_project.article_transaction_external_layout">
+                    <div class="page">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Site</th>
+                                    <th>Kode PID</th>
+                                    <th>Sequence</th>
+                                    <th>Article</th>
+                                    <th>SAP Qty</th>
+                                    <th>Opname Qty</th>
+                                    <th>Inventory Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="periode" t-value="get_stock_inventory_periode(data['form']['stock_inventory_periode_id'][0])"/>
+                                <t t-foreach="periode.stock_inventory_source_ids" t-as="source_id">
+                                    <t t-set="line" t-value="get_source_line(source_id['id'])"/>
+                                    <tr>
+                                        <td><span t-esc="line['site']"/></td>
+                                        <td><span t-esc="line['kode_pid']"/></td>
+                                        <td><span t-esc="line['sequence']"/></td>
+                                        <td><span t-esc="line['article_id']"/></td>
+                                        <td><span t-esc="line['product_theoretical_qty']"/></td>
+                                        <td><span t-esc="line['product_real_qty']"/></td>
+                                        <td><span t-esc="line['inventory_value']"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</openerp>

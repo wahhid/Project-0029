@@ -11,6 +11,7 @@
         "wizard/import_inventory_view.xml",
         "wizard/import_product_view.xml",
         "views/stock_view.xml",
+        "views/product_view.xml",
         "views/templates.xml",
     ],
     "installable": True,

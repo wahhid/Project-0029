@@ -9,6 +9,7 @@
                 <form string="Article By Gondola">
                     <group>
                         <field name="stock_inventory_periode_id"/>
+                        <field name="report_type"/>
                         <field name="iface_all_gondola"/>
                         <field name="gondola_ids" widget="many2many_tags" options="{'create': false, 'create_edit': false}"/>
                         <field name="iface_all_gondola"/>

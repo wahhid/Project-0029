@@ -73,7 +73,7 @@
                         <button name="trans_re_open" string="Set to Open" states="done" type="object"/>
                         <button name="trans_calculate" string="Calculate" states="draft,open" type="object"/>
                         <button name="%(action_import_inventory)d" string="Load Source" states="draft" class="oe_highlight" type="action"/>
-                        <button name="trans_download_sap" string="Download SAP" states="open,close" type="object" class="oe_highlight"/>
+                        <button name="trans_generate_file" string="Generate File" states="open,close" type="object" class="oe_highlight"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -83,7 +83,7 @@
                                 icon="fa-building-o"
                                 type="object"
                                 help="List view of Sources"
-                                groups="base.group_no_one"
+                                groups="stock.group_stock_manager"
                                 states="draft,open,done">
                                 <div class="o_form_field o_stat_info">
                                     <span class="o_stat_text">Sources</span>
@@ -94,7 +94,7 @@
                                 icon="fa-building-o"
                                 type="object"
                                 help="List view of Transactions"
-                                groups="base.group_no_one"
+                                groups="stock.group_stock_manager"
                                 states="draft,open,done">
                                 <div class="o_form_field o_stat_info">
                                     <span class="o_stat_text">Transactions</span>
@@ -105,7 +105,7 @@
                                 icon="fa-building-o"
                                 type="object"
                                 help="List view of Lines"
-                                groups="base.group_no_one"
+                                groups="stock.group_stock_manager"
                                 states="draft,open,done">
                                 <div class="o_form_field o_stat_info">
                                     <span class="o_stat_text">Lines</span>
@@ -117,8 +117,9 @@
                             <h1><field name="name" placeholder="e.g. Annual inventory"/></h1>
                         </div>
                          <group>
-                            <field name="trans_date"/>
-                            <field name="location_id"/>
+                             <field name="trans_date"/>
+                             <field name="location_id"/>
+                             <field name="sap_csv_file"/>
                              <field name="iface_calculate"/>
                              <field name="datetime_calculate"/>
                         </group>
@@ -195,9 +196,7 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem action="action_stock_inventory_trans"
-                  id="menu_action_stock_inventory_trans"
-                  parent="menu_stock_opname_transaction" sequence="1"/>
+        <menuitem action="action_stock_inventory_trans" id="menu_action_stock_inventory_trans" parent="menu_stock_opname_transaction" sequence="1"/>
 
         <record id="stock_inventory_source_tree2" model="ir.ui.view">
             <field name="name">stock.inventory.source.tree2</field>
@@ -208,7 +207,7 @@
                     <field name="kode_pid"/>
                     <field name="sequence"/>
                     <field name="article_id"/>
-                    <field name="product_theoretical_qty"/>
+                    <field name="product_theoretical_qty" groups="stock.group_stock_manager"/>
                     <field name="product_real_qty"/>
                     <field name="inventory_value"/>
                 </tree>

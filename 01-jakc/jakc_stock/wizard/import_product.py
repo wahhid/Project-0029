@@ -34,17 +34,15 @@ class ImportProduct(models.TransientModel):
         reader = csv.reader(file_input, delimiter=delimeter,lineterminator='\r\n')
 
         for row in reader:
-            product_ids = product_obj.search([('default_code','=', row[0])])
-            if not product_ids:
-                vals = {}
-                vals.update({'name': str(row[3])})
-                vals.update({'default_code': row[0]})
-                vals.update({'type':'product'})
-                vals.update({'categ_id':1})
-                vals.update({'article_id': row[1]})
-                vals.update({'uom_id':1})
-                vals.update({'uom_po_id':1})
-                res = self.env['product.template'].create(vals)
+            vals = {}
+            vals.update({'name': str(row[3])})
+            vals.update({'default_code': row[0]})
+            vals.update({'type':'product'})
+            vals.update({'categ_id':1})
+            vals.update({'article_id': row[1]})
+            vals.update({'uom_id':1})
+            vals.update({'uom_po_id':1})
+            res = self.env['product.template'].create(vals)
 
 
 class StockInventoryImportLine(models.Model):

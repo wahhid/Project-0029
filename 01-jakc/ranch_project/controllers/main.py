@@ -131,7 +131,10 @@ class WebsiteWarehoue(http.Controller):
         if product_template:
             request.session['productid'] = product_template[0].id
             request.session['productname'] = product_template[0].name
-            request.session['article_id'] = product_template[0].article_id
+            if product_template[0].article_id:
+                request.session['article_id'] = product_template[0].article_id
+            else:
+                request.session['article_id'] = 'xxxxxxxxxx'
             args = [('stock_inventory_trans_id','=', request.session.transid),('gondola_id','=', request.session.gondolaid)]
             stock_inventory_trans_line_ids = stock_inventory_trans_line.sudo().search(args, order='date desc')
             if len(stock_inventory_trans_line_ids) > 0:
@@ -148,8 +151,9 @@ class WebsiteWarehoue(http.Controller):
     @http.route('/warehouse/opname/trans/save', type='http', methods=['POST'], auth='public', csrf=False)
     def trans_save(self, **post):
         datas = {}
-        qty = post['qty']
-        if qty < 10000:
+        qty = float(post['qty'])
+        if qty < 10000.0:
+            _logger.info("QTY True")
             stock_inventory_obj = http.request.env['stock.inventory']
             stock_inventory = stock_inventory_obj.sudo().browse(request.session['periodeid'])
             stock_inventory_trans_line_obj = http.request.env['stock.inventory.trans.line']
@@ -184,4 +188,5 @@ class WebsiteWarehoue(http.Controller):
             stock_inventory_trans_line_obj.sudo().create(vals)
             return request.render('ranch_project.warehouse_opname_trans_product', datas)
         else:
+            _logger.info("QTY False")
             return request.render('ranch_project.warehouse_opname_trans_product', datas)

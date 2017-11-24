@@ -1,1 +1,2 @@
 import import_inventory
+import import_product

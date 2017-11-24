@@ -1,6 +1,7 @@
 from openerp import models, fields, api, exceptions, _
 from datetime import datetime
-
+import base64
+import StringIO
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -43,6 +44,14 @@ class StockInventoryPeriode(models.Model):
             trans.trans_calculate()
         self.iface_calculate = True
         self.datetime_calculate = datetime.now()
+
+    @api.one
+    def trans_generate_file(self):
+        output = StringIO.StringIO()
+        for source in self.stock_inventory_source_ids:
+            content = "{};{};{};{};{};{};{}\n".format(source.site, source.kode_pid, str(source.sequence), source.article_id, str(source.product_theoretical_qty), str(source.product_real_qty), str(source.inventory_value))
+            output.write(content)
+        self.sap_csv_file = base64.encodestring(output.getvalue())
 
     def _get_sap_csv_url(self):
         self.sap_csv_url = "/csv/download/sap/{}/".format(self.id)
@@ -104,6 +113,7 @@ class StockInventoryPeriode(models.Model):
     sap_csv_url = fields.Char(compute='_get_csv_url')
     iface_calculate = fields.Boolean('Calculated', default=False)
     datetime_calculate = fields.Datetime('Calculate Time')
+    sap_csv_file = fields.Binary('SAP File', readonly=True)
     stock_inventory_source_ids = fields.One2many('stock.inventory.source','stock_inventory_periode_id', 'Sources')
     stock_inventory_trans_ids = fields.One2many('stock.inventory.trans','stock_inventory_periode_id', 'Transactions')
     state = fields.Selection([('draft','New'),('open','Open'),('done','Close')], 'Status', default='draft')
@@ -166,7 +176,6 @@ class StockInventoryTrans(models.Model):
                 stock_inventory_source.product_real_qty = quantity
         self.iface_calculate = True
         self.datetime_calculate = datetime.now()
-
 
     stock_inventory_periode_id = fields.Many2one('stock.inventory.periode','Periode #')
     gondola_id = fields.Many2one('gondola','Gondola', index=True)

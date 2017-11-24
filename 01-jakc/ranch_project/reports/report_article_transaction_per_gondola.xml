@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="article_transaction_per_gondola_external_layout">
+            <!-- Multicompany -->
+            <t t-if="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id"></t>
+            </t>
+            <t t-if="not o or not 'company_id' in o">
+                <t t-set="company" t-value="res_company"></t>
+            </t>
+            <t t-call="ranch_project.article_transaction_per_gondola_external_layout_header"/>
+            <t t-raw="0" />
+            <t t-call="ranch_project.article_transaction_per_gondola_external_layout_footer"/>
+        </template>
+
+        <template id="article_transaction_per_gondola_external_layout_header">
+            <div class="header">
+                <div class="row">
+                    <center>
+                        <h2>Article Transaction by Gondola</h2>
+                    </center>
+                </div>
+                <div class="row">
+                    <center><span t-esc="formatLang(data['form']['date_start'],date=True)"/> - <span t-esc="formatLang(data['form']['date_end'],date=True)"/></center>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <span>NRK</span>
+                            </div>
+                            <div class="col-xs-8">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <span>NIP</span>
+                            </div>
+                            <div class="col-xs-8">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <span>Nama</span>
+                            </div>
+                            <div class="col-xs-8">
+                                <span t-esc="get_employee_name(employee_id)"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <span>Jabatan</span>
+                            </div>
+                            <div class="col-xs-8">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <span>Tanggal Masuk</span>
+                            </div>
+                            <div class="col-xs-8">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <span>Organisasi</span>
+                            </div>
+                            <div class="col-xs-8">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template id="article_transaction_per_gondola_external_layout_footer">
+            <div class="footer">
+            </div>
+        </template>
+
+        <template id="report_absencedetails">
+            <t t-call="report.html_container">
+                <t t-foreach="data['form']['employee_ids']" t-as="employee_id">
+                    <t t-call="jakc_hr_schedule.absence_details_external_layout">
+                        <div class="page">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Hari</th>
+                                            <th>Tanggal</th>
+                                            <th>Jadwal</th>
+                                            <th>Aktifitas</th>
+                                            <th>Aktual Masuk</th>
+                                            <th>Aktual Pulang</th>
+                                            <th>KWK</th>
+                                            <th>JWK</th>
+                                            <th>JWK (REAL)</th>
+                                            <th>Keterangan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="invoice_tbody">
+                                        <t t-foreach="get_schedule_detail(employee_id,data['form']['date_start'],data['form']['date_end'])" t-as="detail">
+                                            <tr>
+
+                                                <td>
+                                                    <t t-if="detail['dayofweek'] == '0'">
+                                                        <span>Senin</span>
+                                                    </t>
+                                                    <t t-if="detail['dayofweek'] == '1'">
+                                                        <span>Selasa</span>
+                                                    </t>
+                                                    <t t-if="detail['dayofweek'] == '2'">
+                                                        <span>Rabu</span>
+                                                    </t>
+                                                    <t t-if="detail['dayofweek'] == '3'">
+                                                        <span>Kamis</span>
+                                                    </t>
+                                                    <t t-if="detail['dayofweek'] == '4'">
+                                                        <span>Jumat</span>
+                                                    </t>
+                                                    <t t-if="detail['dayofweek'] == '5'">
+                                                        <span>Sabtu</span>
+                                                    </t>
+                                                    <t t-if="detail['dayofweek'] == '6'">
+                                                        <span>Minggu</span>
+                                                    </t>
+                                                </td>
+                                                <td><span t-esc="detail['day']"/></td>
+                                                <td>
+                                                    <t t-if="detail.date_start">
+                                                        <span t-esc="context_timestamp(datetime.strptime(detail.date_start,'%Y-%m-%d %H:%M:%S')).strftime('%H:%M')"/> -
+                                                    </t>
+                                                    <t t-if="detail.date_end">
+                                                        <span t-esc="context_timestamp(datetime.strptime(detail.date_end,'%Y-%m-%d %H:%M:%S')).strftime('%H:%M')"/>
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="detail['type'] == 'work'">
+                                                         <span>Work</span>
+                                                    </t>
+                                                     <t t-if="detail['type'] == 'off'">
+                                                         <span>Off</span>
+                                                    </t>
+                                                     <t t-if="detail['type'] == 'holiday'">
+                                                         <span>Holiday</span>
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="detail.actual_in">
+                                                         <span t-esc="context_timestamp(datetime.strptime(detail.actual_in,'%Y-%m-%d %H:%M:%S')).strftime('%d-%m-%Y %H:%M:%S')"/>
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="detail.actual_out">
+                                                        <span t-esc="context_timestamp(datetime.strptime(detail.actual_out,'%Y-%m-%d %H:%M:%S')).strftime('%d-%m-%Y %H:%M:%S')"/>
+                                                    </t>
+                                                </td>
+                                                <td><span t-esc="detail['diff_hours_str']"/></td>
+                                                <td><span t-esc="detail['schedule_hours_str']"/></td>
+                                                <td><span t-esc="detail['working_hours_str']"/></td>
+                                                <td>
+                                                    <t t-foreach="detail['exception_ids']" t-as="exception_id">
+                                                        <t t-if="exception_id['exception_code'] == 'normal'">
+                                                            <span>NO</span>
+                                                        </t>
+                                                        <t t-if="exception_id['exception_code'] == 'noswapin'">
+                                                            <span>NSI</span>
+                                                        </t>
+                                                        <t t-if="exception_id['exception_code'] == 'noswapout'">
+                                                            <span>NSO</span>
+                                                        </t>
+                                                        <t t-if="exception_id['exception_code'] == 'noswapinout'">
+                                                            <span>NSIO</span>
+                                                        </t>
+                                                        <t t-if="exception_id['exception_code'] == 'earlyout'">
+                                                            <span>EO</span>
+                                                        </t>
+                                                        <t t-if="exception_id['exception_code'] == 'latein'">
+                                                            <span>LI</span>
+                                                        </t>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+
+                            </table>
+
+                            <div class="row">
+                                <span>Note</span>
+                            </div>
+                            <div class="row">
+                                <span>KWK : Kekurangan Jam Kerja</span>
+                            </div>
+                            <div class="row">
+                                <span>JWK : Jumlah Jam Kerja</span>
+                            </div>
+                            <div class="row">
+                                Libur : <span t-esc="get_schedule_detail_holiday_count(employee_id,data['form']['date_start'],data['form']['date_end'])"/>
+                            </div>
+                            <div class="row">
+                                Hari Kerja : <span t-esc="get_schedule_detail_count(employee_id,data['form']['date_start'],data['form']['date_end'])"/>
+                            </div>
+                            <div class="row">
+                                Bukan Hari Kerja : <span t-esc="get_schedule_detail_not_work_count(employee_id,data['form']['date_start'],data['form']['date_end'])"/>
+                            </div>
+                            <div class="row">
+                                Kehadiran : <span t-esc="get_schedule_detail_work_count(employee_id,data['form']['date_start'],data['form']['date_end'])"/>
+                            </div>
+                            <div class="row">
+                                Ketidakhadiran : <span t-esc="get_schedule_detail_work_exception(employee_id,data['form']['date_start'],data['form']['date_end'])"/>
+                            </div>
+                            <div class="row">
+                                Ketidakhadiran + Alpa : <span t-esc="get_schedule_detail_work_exception(employee_id,data['form']['date_start'],data['form']['date_end'])"/>
+                            </div>
+                            <div class="row">
+                                Alpa : <span t-esc="get_schedule_detail_work_exception(employee_id,data['form']['date_start'],data['form']['date_end'])"/>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <menuitem name="Report" id="menu_hr_root_report" parent="jakc_hr_schedule.menu_time_attendance" groups="base.group_hr_user" sequence="20"/>
+        <menuitem action="action_report_absence_details" name="Employee Absence" id="menu_hr_absence_report" parent="menu_hr_root_report" groups="base.group_hr_user" sequence="1"/>
+
+
+    </data>
+</openerp>

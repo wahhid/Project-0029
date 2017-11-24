@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!--  Article Per Gondola -->
+        <record id="wizard_report_article_transaction" model="ir.ui.view">
+            <field name="name">Article Transaction</field>
+            <field name="model">wizard.report.article.transaction</field>
+            <field name="arch" type="xml">
+                <form string="Article By Gondola">
+                    <group>
+                        <field name="stock_inventory_periode_id"/>
+                        <field name="report_type"/>
+                    </group>
+                    <footer>
+                        <button name="print_report" type="object" string="Print Report" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="act_wizard_report_article_transaction" model="ir.actions.act_window">
+            <field name="name">Article Transaction</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.report.article.transaction</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem  id="menu_article_transaction" name="Article Transaction" action="act_wizard_report_article_transaction" parent="menu_stock_opname_report"/> -->
+
+    </data>
+</openerp>

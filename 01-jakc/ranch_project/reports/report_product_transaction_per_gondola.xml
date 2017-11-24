@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="product_transaction_per_gondola_external_layout">
+            <!-- Multicompany -->
+            <t t-if="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id"></t>
+            </t>
+            <t t-if="not o or not 'company_id' in o">
+                <t t-set="company" t-value="res_company"></t>
+            </t>
+            <t t-call="ranch_project.product_transaction_per_gondola_external_layout_header"/>
+            <t t-raw="0" />
+            <t t-call="ranch_project.product_transaction_per_gondola_external_layout_footer"/>
+        </template>
+
+        <template id="product_transaction_per_gondola_external_layout_header">
+            <div class="header">
+                <div class="row">
+                    <center>
+                        <h2>Product Transaction by Gondola</h2>
+                    </center>
+                </div>
+            </div>
+        </template>
+
+        <template id="product_transaction_per_gondola_external_layout_footer">
+            <div class="footer">
+            </div>
+        </template>
+
+        <template id="report_producttransactionpergondola">
+            <t t-call="report.html_container">
+                <t t-call="ranch_project.product_transaction_per_gondola_external_layout">
+                    <div class="page">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Product</th>
+                                    <th>Article</th>
+                                    <th>Qty 1</th>
+                                    <th>Qty 2</th>
+                                    <th>Qty 3</th>
+                                </tr>
+                            </thead>
+                            <tbody class="invoice_tbody">
+                                <t t-foreach="data['form']['gondola_ids']" t-as="gondola_id">
+                                    <t t-foreach="get_stock_inventory_trans(data['form']['stock_inventory_periode_id'][0], gondola_id)" t-as="trans">
+                                        <t t-foreach="trans.line_ids" t-as="line_id">
+                                            <t t-set="line" t-value="get_trans_line(line_id['id'])"/>
+                                            <tr>
+                                                <td><span t-esc="line['date']"/></td>
+                                                <td><span t-esc="line['product_id']['name']"/></td>
+                                                <td><span t-esc="line['article_id']"/></td>
+                                                <td><span t-esc="line['qty1']"/></td>
+                                                <td><span t-esc="line['qty2']"/></td>
+                                                <td><span t-esc="line['qty3']"/></td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</openerp>
