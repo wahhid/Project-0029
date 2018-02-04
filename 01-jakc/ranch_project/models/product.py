@@ -7,11 +7,13 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    ean = fields.Char('Ean', size=100)
-    article_id = fields.Char('Article #', size=100)
+    ean = fields.Char('Ean', size=100, index=True)
+    article_id = fields.Char('Article #', size=100, index=True)
+    marchandise_id = fields.Char('Marchandise #', size=100, index=True)
 
 
 class ProductImport(models.Model):
@@ -47,6 +49,7 @@ class ProductImport(models.Model):
         i = 0
         for row in reader:
             i += 1
+            _logger.info(str(i))
             #print i
             #vals = {}
             #vals.update({'name': str(row[3])})
@@ -59,24 +62,27 @@ class ProductImport(models.Model):
             #res = self.env['product.template'].create(vals)
             product_template = self._get_product_by_ean(str(row[0]))
             if not product_template:
+                _logger.info('INSERT')
                 _logger.info(row)
                 strsql = """INSERT INTO product_template (
                             name,
                             ean,
                             type,
                             categ_id,
+                            marchandise_id,
                             article_id,
                             uom_id,
                             uom_po_id, 
                             tracking, 
                             active) 
-                            VALUES ('{}', '{}', '{}', {}, '{}', {} ,{} , '{}', {}) RETURNING id
+                            VALUES ('{}', '{}', '{}', {}, '{}', {} ,{} , '{}', '{}', {}) RETURNING id
                         """\
                         .format(str(row[3].replace("'"," ").decode('unicode_escape').encode('ascii', 'ignore')),
                                 str(row[0]),
                                 'product',
                                 str(1),
                                 str(row[2]),
+                                str(row[1]),
                                 str(1),
                                 str(1),
                                 'none',
@@ -95,17 +101,19 @@ class ProductImport(models.Model):
                                 'true')
                 self.env.cr.execute(strsql)
             else:
-                print row
+                _logger.info('UPDATE')
+                _logger.info(row)
                 strsql = """UPDATE product_template SET
                             name='{}',
                             ean='{}',
                             type='{}',
                             categ_id={},
+                            marchandise_id='{}',
                             article_id='{}',
                             uom_id={},
                             uom_po_id={},
                             tracking='{}',
-                            active={} 
+                            active={}
                             WHERE id={}
                         """\
                         .format(str(row[3].replace("'"," ").decode('unicode_escape').encode('ascii', 'ignore')),
@@ -113,6 +121,7 @@ class ProductImport(models.Model):
                                 'product',
                                 str(1),
                                 str(row[2]),
+                                str(row[1]),
                                 str(1),
                                 str(1),
                                 'none',
@@ -122,7 +131,7 @@ class ProductImport(models.Model):
 
                 strsql = """UPDATE product_product SET
                             default_code='{}',
-                            active={}     
+                            active={}
                             WHERE product_tmpl_id={}
                         """.format(str(row[0]),
                                    'true',

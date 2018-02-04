@@ -3,17 +3,20 @@
     <data>
         <!--  Article Per Gondola -->
         <record id="wizard_report_product_transaction_per_gondola" model="ir.ui.view">
-            <field name="name">Product By Gondola</field>
+            <field name="name">Product or Gondola</field>
             <field name="model">wizard.report.product.transaction.per.gondola</field>
             <field name="arch" type="xml">
                 <form string="Article By Gondola">
                     <group>
-                        <field name="stock_inventory_periode_id"/>
+                        <field name="stock_inventory_periode_id" options="{'create': false, 'create_edit': false}"/>
                         <field name="report_type"/>
-                        <field name="iface_all_gondola"/>
-                        <field name="gondola_ids" widget="many2many_tags" options="{'create': false, 'create_edit': false}"/>
-                        <field name="iface_all_gondola"/>
-                        <field name="product_ids" widget="many2many_tags"/>
+                        <field name="report_category"/>
+                        <field name="report_gondola_filter"/>
+                        <field name="gondola_start_code" attrs="{'invisible':[('report_gondola_filter','in',('01','03'))]}"/>
+                        <field name="gondola_end_code" attrs="{'invisible':[('report_gondola_filter','in',('01','03'))]}"/>
+                        <field name="gondola_ids" widget="many2many_tags" attrs="{'invisible':[('report_gondola_filter','in',('01','02'))]}" options="{'create': false, 'create_edit': false}"/>
+                        <field name="report_product_filter"/>
+                        <field name="product_ids" widget="many2many_tags" attrs="{'invisible':[('report_product_filter','in', ('01'))]}"/>
                     </group>
                     <footer>
                         <button name="print_report" type="object" string="Print Report" class="btn-primary"/>
@@ -23,9 +26,8 @@
             </field>
         </record>
 
-
         <record id="act_wizard_report_product_per_gondola" model="ir.actions.act_window">
-            <field name="name">Product By Gondola</field>
+            <field name="name">Product or Gondola</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.report.product.transaction.per.gondola</field>
             <field name="view_type">form</field>
@@ -33,8 +35,7 @@
             <field name="target">new</field>
         </record>
 
-
-        <menuitem  id="menu_product_transaction_per_gondola" name="Product By Gondola" action="act_wizard_report_product_per_gondola" parent="menu_stock_opname_report"/> -->
+        <menuitem  id="menu_product_transaction_per_gondola" name="Product or Gondola" action="act_wizard_report_product_per_gondola" parent="menu_stock_opname_report"/> -->
 
     </data>
 </openerp>

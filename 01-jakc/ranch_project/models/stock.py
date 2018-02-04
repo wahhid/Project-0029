@@ -13,6 +13,7 @@ class Gondola(models.Model):
     stock_warehouse_id = fields.Many2one('stock.warehouse','warehouse #')
     code = fields.Char('Code', size=20, required=True)
     name = fields.Char('Name', size=100, required=True)
+    state = fields.Selection([('ready','Ready'),('active','Active')], 'Status', default='ready')
 
 
 class StockWarehouse(models.Model):
@@ -26,33 +27,56 @@ class StockInventoryPeriode(models.Model):
 
     @api.one
     def trans_open(self):
+        self.stock_inventory_trans_ids.write({'state': 'open'})
         self.write({'state':'open'})
 
     @api.one
     def trans_close(self):
+        self.stock_inventory_trans_ids.write({'state': 'done'})
         self.write({'state': 'done'})
 
     @api.one
     def trans_re_open(self):
+        self.stock_inventory_trans_ids.write({'state': 'open'})
         self.write({'state': 'open'})
 
     @api.one
     def trans_calculate(self):
         print "Trans Calculate"
-        for trans in self.stock_inventory_trans_ids:
-            _logger.info('Process : ' + str(trans.id))
-            trans.trans_calculate()
+        stock_inventory_trans_line_obj = self.env['stock.inventory.trans.line']
+        for source in self.stock_inventory_source_ids:
+            _logger.info(source)
+            args = [('stock_inventory_periode_id', '=' , self.id),('article_id','=', source.article_id)]
+            stock_inventory_trans_line_ids = stock_inventory_trans_line_obj.search(args)
+            quantity = 0
+            for line in stock_inventory_trans_line_ids:
+                if line.stock_inventory_trans_id.step == '1':
+                    quantity += line.qty1
+                elif line.stock_inventory_trans_id.step == '2':
+                    quantity += line.qty2
+                else:
+                    quantity += line.qty3
+            source.product_real_qty = quantity
+            if source.product_theoretical_qty != source.product_real_qty:
+                source.iface_diff = True
         self.iface_calculate = True
         self.datetime_calculate = datetime.now()
+
+    @api.one
+    def trans_next_step(self):
+        for line in self.stock_inventory_trans_ids:
+            line.trans_next_step()
 
     @api.one
     def trans_generate_file(self):
         output = StringIO.StringIO()
         for source in self.stock_inventory_source_ids:
             content = "{};{};{};{};{};{};{}\n".format(source.site, source.kode_pid, str(source.sequence), source.article_id, str(source.product_theoretical_qty), str(source.product_real_qty), str(source.inventory_value))
+            _logger.info(content)
             output.write(content)
         self.sap_csv_file = base64.encodestring(output.getvalue())
 
+    @api.one
     def _get_sap_csv_url(self):
         self.sap_csv_url = "/csv/download/sap/{}/".format(self.id)
 
@@ -114,22 +138,32 @@ class StockInventoryPeriode(models.Model):
     iface_calculate = fields.Boolean('Calculated', default=False)
     datetime_calculate = fields.Datetime('Calculate Time')
     sap_csv_file = fields.Binary('SAP File', readonly=True)
-    stock_inventory_source_ids = fields.One2many('stock.inventory.source','stock_inventory_periode_id', 'Sources')
-    stock_inventory_trans_ids = fields.One2many('stock.inventory.trans','stock_inventory_periode_id', 'Transactions')
+    stock_inventory_source_ids = fields.One2many('stock.inventory.source','stock_inventory_periode_id', 'Sources', ondelete="cascade")
+    stock_inventory_trans_ids = fields.One2many('stock.inventory.trans','stock_inventory_periode_id', 'Transactions', ondelete="cascade")
     state = fields.Selection([('draft','New'),('open','Open'),('done','Close')], 'Status', default='draft')
 
 
 class StockInventorySource(models.Model):
     _name = 'stock.inventory.source'
 
+    @api.one
+    def _calculate_line_quantity(self):
+        qty = 0
+        for source in self:
+            for line in source.line_ids:
+                qty += line.qty
+            self.product_real_qty = qty
+
     stock_inventory_periode_id = fields.Many2one('stock.inventory.periode','Periode #', index=True)
     site = fields.Char('Site', size=20, index=True)
     kode_pid = fields.Char('Kode PID', size=20, index=True)
     sequence = fields.Integer('Sequence')
     article_id = fields.Char('Article #', size=50, index=True)
-    product_theoretical_qty = fields.Float('Theoretical Qty', default=0.0)
-    product_real_qty = fields.Float('Real Qty', default=0.0)
+    product_theoretical_qty = fields.Float('Theoretical Qty', digits=(12,3), default=0.0)
+    product_real_qty = fields.Float("Real Qty", digits=(12,3))
     inventory_value = fields.Float('Inventory Value', default=0.0)
+    iface_diff = fields.Boolean('Diff', readonly=True, default=False)
+    line_ids = fields.One2many('stock.inventory.trans.line','stock_inventory_trans_source_id','Lines')
 
 
 class StockInventoryTrans(models.Model):
@@ -147,11 +181,31 @@ class StockInventoryTrans(models.Model):
         return data
 
     @api.one
+    def trans_read_group(self):
+        #for group in self.env['sale.report'].read_group(domain, ['product_id', 'product_uom_qty'], ['product_id']):
+        #    r[group['product_id'][0]] = group['product_uom_qty']
+
+        stock_inventory_trans_line_obj = self.env['stock.inventory.trans.line']
+        domain = [('stock_inventory_periode_id','=',self.stock_inventory_periode_id.id),]
+        fields = ['product_id','qty']
+        groupby = ['product_id']
+        stock_inventory_trans_line_group= stock_inventory_trans_line_obj.read_group(domain, fields, groupby)
+        for line_group in stock_inventory_trans_line_group:
+            _logger.info("Line")
+            _logger.info(line_group['product_id'][0] + ' - ' + line_group['qty'])
+
+    @api.one
     def trans_next_step(self):
         trans = self
         if trans.step == '1':
-            self.write({'step':'2'})
-        if trans.step == '2':
+            for line in trans.line_ids:
+                qty = line.qty1
+                line.qty2 = qty
+            self.write({'step': '2'})
+        elif trans.step == '2':
+            for line in trans.line_ids:
+                qty = line.qty2
+                line.qty3 = qty
             self.write({'step': '3'})
 
     @api.one
@@ -161,13 +215,7 @@ class StockInventoryTrans(models.Model):
         self.env.cr.execute(strsql)
         articles = self.env.cr.fetchall()
         for article in articles:
-            if self.step == '1':
-                strsql = """SELECT sum(qty1) FROM stock_inventory_trans_line WHERE stock_inventory_trans_id={} AND article_id='{}'""".format(self.id, article[0])
-            if self.step == '2':
-                strsql = """SELECT sum(qty2) FROM stock_inventory_trans_line WHERE stock_inventory_trans_id={} AND article_id='{}'""".format(self.id, article[0])
-            if self.step == '3':
-                strsql = """SELECT sum(qty3) FROM stock_inventory_trans_line WHERE stock_inventory_trans_id={} AND article_id='{}'""".format(self.id, article[0])
-
+            strsql = """SELECT sum(qty) FROM stock_inventory_trans_line WHERE stock_inventory_trans_id={} AND article_id='{}'""".format(self.id, article[0])
             self.env.cr.execute(strsql)
             quantity =  self.env.cr.fetchone()[0]
             args = [('stock_inventory_periode_id','=', self.stock_inventory_periode_id.id),('article_id','=',article[0])]
@@ -177,27 +225,34 @@ class StockInventoryTrans(models.Model):
         self.iface_calculate = True
         self.datetime_calculate = datetime.now()
 
-    stock_inventory_periode_id = fields.Many2one('stock.inventory.periode','Periode #')
+    stock_inventory_periode_id = fields.Many2one('stock.inventory.periode','Periode #', index=True)
     gondola_id = fields.Many2one('gondola','Gondola', index=True)
     user_id = fields.Many2one('res.users', 'User', index=True)
-    step = fields.Selection([('1','First Collection'),('2','Second Collection'),('3','Third Collection')], 'Step', default='1')
+    step = fields.Selection([('1','First Collection'),('2','Second Collection'),('3','Third Collection')], 'Step', default='1', index=True)
     iface_calculate = fields.Boolean('Calculated', default=False)
     datetime_calculate = fields.Datetime('Calculate Time')
-    state = fields.Selection([('open','Open'),('done','Close')], 'Status')
-    line_ids = fields.One2many('stock.inventory.trans.line', 'stock_inventory_trans_id', 'Lines')
+    state = fields.Selection([('open','Open'),('done','Close')], 'Status', index=True)
+    line_ids = fields.One2many('stock.inventory.trans.line', 'stock_inventory_trans_id', 'Lines', ondelete="cascade")
+
 
 class StockInventoryTransLine(models.Model):
     _name = 'stock.inventory.trans.line'
 
     stock_inventory_trans_id = fields.Many2one('stock.inventory.trans','Transaction #', index=True)
+    stock_inventory_periode_id = fields.Many2one('stock.inventory.periode', string='Periode #', related='stock_inventory_trans_id.stock_inventory_periode_id', store=True, readonly=True)
+    stock_inventory_trans_source_id = fields.Many2one('stock.inventory.source', 'Source', readonly=True)
     date = fields.Datetime('Date', default=lambda self: fields.datetime.now())
-    gondola_id = fields.Many2one(comodel_name='gondola', string='Gondola', related='stock_inventory_trans_id.gondola_id')
+    gondola_id = fields.Many2one(comodel_name='gondola', string='Gondola', related='stock_inventory_trans_id.gondola_id', store=True)
     product_id = fields.Many2one('product.template','Product')
+    ean = fields.Char('Ean', related='product_id.ean')
     article_id = fields.Char('Article #', size=20)
-    user_id = fields.Many2one(comodel_name='res.users', string='User', related='stock_inventory_trans_id.user_id')
-    qty1 = fields.Float('Qty 1')
-    qty2 = fields.Float('Qty 2')
-    qty3 = fields.Float('Qty 3')
+    user_id = fields.Many2one(comodel_name='res.users', string='User', related='stock_inventory_trans_id.user_id', store=True)
+    step = fields.Selection([('1','First Collection'),('2','Second Collection'),('3','Third Collection')], string='Step', related='stock_inventory_trans_id.step',default='1')
+    qty1 = fields.Float('Qty 1', digits=(12,3), default=0.0)
+    qty2 = fields.Float('Qty 2', digits=(12,3), default=0.0)
+    qty3 = fields.Float('Qty 3', digits=(12,3), default=0.0)
+    qty = fields.Float('Qty', digits=(12,3), default=0.0)
+
 
 
 

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <openerp>
     <data>
-        <report
-            id="report_product_transaction_per_gondola"
+        <report id="report_product_transaction_per_gondola"
             string="Product By Gondola"
             model="stock.inventory.periode"
             report_type="qweb-pdf"
@@ -31,8 +30,37 @@
             <field name="paperformat_id" ref="ranch_project.paperformat_product_transaction_per_gondola"/>
         </record>
 
-        <report
-            id="report_article_transaction"
+
+        <report id="report_gondola_transaction_per_product"
+            string="Gondola By Product"
+            model="stock.inventory.periode"
+            report_type="qweb-pdf"
+            name="ranch_project.report_gondolatransactionperproduct"
+            file="ranch_project.report_gondolatransactionperproduct"
+            menu="False"
+         />
+
+        <record id="paperformat_gondola_transaction_per_product" model="report.paperformat">
+            <field name="name">Gondola By Product</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+            <field name="page_height">297</field>
+            <field name="page_width">210</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">45</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">10</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">40</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <record id="ranch_project.report_gondola_transaction_per_product" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="ranch_project.paperformat_gondola_transaction_per_product"/>
+        </record>
+
+        <report id="report_article_transaction"
             string="Article Transaction"
             model="stock.inventory.periode"
             report_type="qweb-pdf"

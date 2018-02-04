@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <field name="type" position="before">
                     <field name="article_id"/>
+                    <field name="marchandise_id"/>
                     <field name="ean"/>
                 </field>
             </field>

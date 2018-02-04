@@ -53,5 +53,5 @@ class ImportInventory(models.TransientModel):
                         product_theoretical_qty, 
                         inventory_value) 
                         VALUES ({},'{}','{}',{},'{}',{},{})
-                     """.format(periode.id , str(row[0]), str(row[1]), int(row[2]), str(row[3]), int(float(row[4])), int(float(row[5])))
+                     """.format(periode.id, str(row[0]), str(row[1]), int(row[2]), str(row[3]), float(row[4]), float(row[6]))
             self.env.cr.execute(strSQL)

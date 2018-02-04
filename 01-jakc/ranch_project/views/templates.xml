@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="windows-1252"?>
 <openerp>
     <data>
+        <template id="assets_backend" name="ranch_project_report_assets" inherit_id="report.assets_backend">
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" href="/ranch_project/static/src/css/ranch_project_report.css"/>
+            </xpath>
+        </template>
+
         <template id="warehouse_opname_index">
             <html>
                 <head>
@@ -118,7 +124,7 @@
                                 <td><input type="submit" value="Find"/></td>
                             </tr>
                         </table>
-                        <a href="index.jsp">Logout</a>
+                        <a href="/warehouse/opname/logout">Logout</a>
                    </form>
                 </body>
             </html>
@@ -150,14 +156,22 @@
                             <td>Gondola Name</td>
                             <td>:</td>
                             <td>
-                                <t t-esc="request.session.gondolaname"/>
+                                <t t-esc="request.session.gondolacode"/>
                             </td>
                         </tr>
                         <tr>
                             <td>Progress</td>
                             <td>:</td>
                             <td>
-                                <t t-esc="request.session.step"/>
+                                <t t-if="request.session.step == '1'">
+                                    <span>First Collection</span>
+                                </t>
+                                <t t-if="request.session.step == '2'">
+                                    <span>Second Collection</span>
+                                </t>
+                                <t t-if="request.session.step == '3'">
+                                    <span>Third Collection</span>
+                                </t>
                             </td>
                         </tr>
                         <tr>
@@ -220,7 +234,7 @@
                             </tr>
                             <tr>
                                 <td>Last</td>
-                                <td></td>
+                                <td><t t-esc="request.session.lastproduct"/></td>
                             </tr>
                             <tr>
                                 <td>Ean</td>
@@ -269,18 +283,44 @@
                                 <td>Product</td>
                                 <td><t t-esc="request.session.productname"/></td>
                             </tr>
-                            <tr>
-                                <td>Quantity</td>
-                                <td>
-                                    <input type="text" name="qty"/>
-                                </td>
+                             <t t-if="request.session.step == '1'">
+                                <tr>
+                                    <td>Quantity</td>
+                                    <td>
+                                        <input type="text" name="qty" value=""/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-if="request.session.step == '2'">
+                                <t t-foreach="trans_lines" t-as="trans_line">
+                                    <tr>
+                                        <td>Quantity</td>
+                                        <td>
+                                            <input type="text" t-attf-name="{{trans_line.id}}" t-attf-value="{{trans_line.qty1}}"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <t t-if="request.session.step == '3'">
+                                <t t-foreach="trans_lines" t-as="trans_line">
+                                    <tr>
+                                        <td>Quantity</td>
+                                        <td>
+                                            <input type="text" t-attf-name="{{trans_line.id}}" t-attf-value="{{trans_line.qty2}}"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <tr t-if="msg">
+                                <td></td>
+                                <td><t t-esc="msg"/></td>
                             </tr>
                             <tr>
                                 <td></td>
                                 <td><input type="submit" value="Submit" /></td>
                             </tr>
                         </table>
-                        <a href="inputdata.jsp">Back</a>
+                        <a href="/warehouse/opname/trans/back">Back</a>
                     </form>
                 </body>
             </html>

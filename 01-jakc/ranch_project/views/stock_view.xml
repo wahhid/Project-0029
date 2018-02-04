@@ -2,29 +2,18 @@
 <openerp>
     <data>
 
-        <menuitem name="Opname"
-            id="menu_stock_opname_root"
+        <menuitem id="menu_stock_opname_root" name="Opname"
             groups="stock.group_stock_manager,stock.group_stock_user"
             icon="fa-archive"
             web_icon="stock,static/description/icon.png"
             sequence="30"/>
-
         <menuitem id="menu_stock_opname_master" name="Master" parent="menu_stock_opname_root" sequence="1"/>
-        <menuitem
-            action="product.product_template_action_product" id="menu_stock_opname_product" name="Products"
-            parent="menu_stock_opname_master" sequence="1"/>
-
-        <menuitem action="stock.action_warehouse_form" id="menu_stock_opname_warehouse_form" groups="stock.group_stock_manager"
-            parent="menu_stock_opname_master" sequence="2"/>
-
+        <menuitem id="menu_stock_opname_product" name="Products" action="product.product_template_action_product" parent="menu_stock_opname_master" sequence="1"/>
+        <menuitem id="menu_stock_opname_warehouse_form" action="stock.action_warehouse_form"  groups="stock.group_stock_manager" parent="menu_stock_opname_master" sequence="2"/>
         <menuitem id="menu_stock_opname_transaction" name="Transaction" parent="menu_stock_opname_root" sequence="2"/>
-
         <menuitem id="menu_stock_opname_report" name="Report" parent="menu_stock_opname_root" sequence="3"/>
-
         <menuitem id="menu_stock_opname_import" name="Import" parent="menu_stock_opname_root" sequence="4"/>
-
         <menuitem id="menu_stock_opname_export" name="Export" parent="menu_stock_opname_root" sequence="4"/>
-
 
         <record model="ir.ui.view" id="jakc_stock_gondola_tree_view">
             <field name="name">jakc.stock.gondola.tree.view</field>
@@ -34,6 +23,7 @@
                     <field name="code"/>
                     <field name="name"/>
                     <field name="stock_warehouse_id"/>
+                    <field name="state"/>
                 </tree>
             </field>
         </record>
@@ -43,15 +33,19 @@
             <field name="model">gondola</field>
             <field name="arch" type="xml">
                 <form>
-                    <group>
-                        <field name="code"/>
-                        <field name="name"/>
-                        <field name="stock_warehouse_id"/>
-                    </group>
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="stock_warehouse_id"/>
+                        </group>
+                    </sheet>
                 </form>
             </field>
         </record>
-
 
         <record id="action_gondola" model="ir.actions.act_window">
             <field name="name">Gondola</field>
@@ -60,9 +54,9 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem action="action_gondola" id="menu_action_gondola" parent="menu_stock_opname_master" sequence="3"/>
+        <menuitem id="menu_action_gondola" action="action_gondola"  parent="menu_stock_opname_master" sequence="3"/>
 
-        <record model="ir.ui.view" id="jakc_stock_inventory_periode_form_view">
+        <record id="jakc_stock_inventory_periode_form_view" model="ir.ui.view" >
             <field name="name">jakc.stock.inventory.periode.form.view</field>
             <field name="model">stock.inventory.periode</field>
             <field name="arch" type="xml">
@@ -70,10 +64,11 @@
                     <header>
                         <button name="trans_open" string="Set to Open" states="draft" type="object" class="oe_highlight"/>
                         <button name="trans_close" string="Set to Close" states="open" type="object" class="oe_highlight"/>
-                        <button name="trans_re_open" string="Set to Open" states="done" type="object"/>
-                        <button name="trans_calculate" string="Calculate" states="draft,open" type="object"/>
+                        <button name="trans_re_open" string="Set to Open" states="done" type="object" confirm="Are you sure to re-open this periode?"/>
+                        <button name="trans_calculate" string="Calculate" states="draft,open" type="object" confirm="Are you sure to calculate?"/>
+                        <button name="trans_next_step" string="Process Next Step" state="draft,open" type="object" confirm="Are you sure to process next step?"/>
                         <button name="%(action_import_inventory)d" string="Load Source" states="draft" class="oe_highlight" type="action"/>
-                        <button name="trans_generate_file" string="Generate File" states="open,close" type="object" class="oe_highlight"/>
+                        <button name="trans_generate_file" string="Generate File" states="open,close" type="object" class="oe_highlight" confirm="Are you sure to generate file?"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -128,9 +123,7 @@
             </field>
         </record>
 
-
-
-        <record model="ir.ui.view" id="stock_inventory_periode_tree_view">
+        <record id="stock_inventory_periode_tree_view" model="ir.ui.view" >
             <field name="name">stock.inventory.periode.tree.view</field>
             <field name="model">stock.inventory.periode</field>
             <field name="arch" type="xml">
@@ -145,8 +138,7 @@
             </field>
         </record>
 
-
-         <record id="action_stock_inventory_periode" model="ir.actions.act_window">
+        <record id="action_stock_inventory_periode" model="ir.actions.act_window">
             <field name="name">Periode</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">stock.inventory.periode</field>
@@ -154,7 +146,6 @@
         </record>
 
         <menuitem action="action_stock_inventory_periode" id="menu_action_stock_inventory_periode" parent="menu_stock_opname_master" sequence="4"/>
-
 
         <record model="ir.ui.view" id="jakc_stock_inventory_trans_form_view">
             <field name="name">jakc.stock.inventory.trans.form.view</field>
@@ -179,7 +170,7 @@
             <field name="name">stock.inventory.trans.tree.view</field>
             <field name="model">stock.inventory.trans</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree create="false" edit="false">
                     <field name="stock_inventory_periode_id"/>
                     <field name="gondola_id"/>
                     <field name="user_id"/>
@@ -210,6 +201,7 @@
                     <field name="product_theoretical_qty" groups="stock.group_stock_manager"/>
                     <field name="product_real_qty"/>
                     <field name="inventory_value"/>
+                    <field name="iface_diff"/>
                 </tree>
             </field>
         </record>
@@ -224,18 +216,17 @@
             <field name="domain">[('stock_inventory_periode_id', '=', active_id)]</field>
         </record>
 
-
         <record model="ir.ui.view" id="jakc_stock_inventory_trans_form_view">
             <field name="name">jakc.stock.inventory.trans.form.view</field>
             <field name="model">stock.inventory.trans</field>
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="trans_next_step" string="Next Step" type="object"/>
-                        <button name="trans_calculate" string="Calculate" type="object"/>
+                        <button name="trans_next_step" string="Next Step" type="object" confirm="Are you sure to go to next step?"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <group>
+                        <field name="stock_inventory_periode_id"/>
                         <field name="gondola_id"/>
                         <field name="user_id"/>
                         <field name="step"/>
@@ -246,7 +237,9 @@
                         <page string="Lines">
                             <field name="line_ids" readonly="1">
                                 <tree>
+                                    <field name="ean"/>
                                     <field name="product_id"/>
+                                    <field name="step"/>
                                     <field name="qty1"/>
                                     <field name="qty2"/>
                                     <field name="qty3"/>
@@ -262,10 +255,13 @@
             <field name="name">stock.inventory.trans.line.tree.view</field>
             <field name="model">stock.inventory.trans.line</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree create="false" edit="false">
+                    <field name="stock_inventory_periode_id"/>
                     <field name="stock_inventory_trans_id"/>
                     <field name="date"/>
                     <field name="gondola_id"/>
+                    <field name="step"/>
+                    <field name="ean"/>
                     <field name="product_id"/>
                     <field name="user_id"/>
                     <field name="qty1"/>
@@ -275,11 +271,33 @@
             </field>
         </record>
 
+        <record id="view_stock_inventory_trans_line_filter" model="ir.ui.view">
+            <field name="name">stock.inventory.trans.line.filter</field>
+            <field name="model">stock.inventory.trans.line</field>
+            <field name="arch" type="xml">
+                <search string="Inventory Transaction">
+                    <field name="stock_inventory_periode_id"/>
+                    <field name="stock_inventory_trans_id"/>
+                    <field name="gondola_id"/>
+                    <field name="product_id"/>
+                    <field name="user_id"/>
+                    <field name="step"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Product" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string="Article" domain="[]" context="{'group_by':'article_id'}"/>
+                        <filter string="Gondola" domain="[]" context="{'group_by':'gondola_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <record id="action_stock_inventory_trans_line" model="ir.actions.act_window">
             <field name="name">Detail</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">stock.inventory.trans.line</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="stock_inventory_trans_line_tree_view"/>
+            <field name="search_view_id" ref="view_stock_inventory_trans_line_filter"/>
         </record>
 
         <menuitem action="action_stock_inventory_trans_line"
@@ -291,6 +309,7 @@
             <field name="model">stock.inventory.trans</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="stock_inventory_periode_id"/>
                     <field name="gondola_id"/>
                     <field name="user_id"/>
                     <field name="step"/>
@@ -314,11 +333,14 @@
             <field name="model">stock.inventory.trans.line</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="stock_inventory_periode_id"/>
+                    <field name="stock_inventory_trans_id"/>
                     <field name="gondola_id"/>
                     <field name="date"/>
                     <field name="product_id"/>
                     <field name="article_id"/>
                     <field name="user_id"/>
+                    <field name="step"/>
                     <field name="qty1"/>
                     <field name="qty2"/>
                     <field name="qty3"/>
