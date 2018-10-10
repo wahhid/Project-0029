@@ -1,0 +1,60 @@
+ISSUE 22-05-2018:
+1. Delete All -> Export , Product Master, Gondola, PID, Periode, Trans
+2. Admin Surabaya -> Import dan Export , Print Per Gondola, PDT
+3. Quantity Validasi -> min 0
+4. Beda Browser
+
+ISSUE : 26-03-2018
+1. Input nomor gondola bisa menggunakan huruf kecil dan kapital -> Done
+2. Desimal point menggunakan titik (.) memudahkan penginput, -> Default pakai titik
+3. Print hasil inputan per gondola tidak perlu pilih periode ( yg mucul hanya periode yg berstatus Open ), -> Done
+4. Hasil print ount per gondola pada second transaction masih acak urutan nya,
+   harap sama dengan urutan scan penginput (first transaction sudah benar) -> Done
+5. Data Real Qty tidak muncul setelah selesai dicalculate -> ini tidak muncu dimana ? setelah calculate dicheck nilai real qtynya ada
+6. Article Master, Column Article terisi Mdse. Category -> ini isinya ketukar ?
+7. Alur transaksi input stock opname bisa dilakukan tanpa menunggu PID diupload -> Done
+8. Delete data PID periode sebelumnya (Closed) belum bisa dilakukan semua (tidak show),
+   maksimal hanya bisa per 2.000 row. -> Langsung delete periode akan hapus semua data yagn terkait dengan periode itu
+
+
+ISSUE : 12-02-2018 :
+
+Done ->
+- first collection belum merah -> Done										 
+- uom non kg decimal point masih insert -> Done
+- article tidak ada di PID, seharusnya kolom exist menjadi bintang(*) -> Done
+- article yang ada di PID tetapi qty different dengan SAP seharusnya kolom differnce menjadi bintang (*) -> Done
+ 			 
+ 
+Pending ->
+- kurang article desc & ean										 
+- kurang artilce											 
+	 
+
+- issue report gondola berupa excel									 
+- article transaction bisa download ke excel masi error
+- product by gondola-bisa download ke excel
+- article transaction bisa download ke excel masih error						 
+
+- generate file csv to  SAP  qty real masih 0 belum masuk (Jika Di Calculate)
+  #Menggunakan Methode Tembak Data
+  * jika tidak di calculate Real QTY masuk
+    #Menggunakan Methode Tembak Data
+  * Sequence 1 hilang
+
+- di report product transaction by gondola table exist dan stok kosong belum ambil data dr SAP	?
+- update master article saat import ?
+
+ISSUE : 05-02-2018
+
+- warna error masih belum merah -> Done
+- penambahan informasi firts collection pada layar pdt wanra merh -> Done
+- yang bisa input decial yang umnya kg -> Done
+- update qty pada saat second collection yang paling update -> Done
+- pada periode - source di tambahkan ean,article desc,selisih qty,selisih value -> Done
+- pada transaction, tambahkan kode article -> Done
+- calulation qty dari semua gondola tidak sama dengan hasil akhir(issue ada di decimal) -> Done
+- article tidak ada di PID, seharusnya kolom exist menjadi bintang(*) -> Done
+- article yang ada di PID tetapi qty different dengan SAP seharusnya kolom differnce menjadi bintang (*) -> Done
+
+

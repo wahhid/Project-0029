@@ -54,7 +54,7 @@
                                         <td><span t-esc="line['kode_pid']"/></td>
                                         <td><span t-esc="line['sequence']"/></td>
                                         <td><span t-esc="line['article_id']"/></td>
-                                        <td><span t-esc="line['product_theoretical_qty']"/></td>
+                                        <td></td>
                                         <td><span t-esc="line['product_real_qty']"/></td>
                                         <td><span t-esc="line['inventory_value']"/></td>
                                     </tr>

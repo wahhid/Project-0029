@@ -7,13 +7,19 @@
             <field name="model">wizard.report.article.transaction</field>
             <field name="arch" type="xml">
                 <form string="Article By Gondola">
-                    <group>
+                    <field name="report_printed" invisible="1"/>
+                    <group attrs="{'invisible':[('report_printed','=',True)]}">
                         <field name="stock_inventory_periode_id"/>
                         <field name="report_type"/>
                     </group>
+                    <group attrs="{'invisible':[('report_printed','=',False)]}">
+                        <field name="report_filename"/>
+                        <field name="report_file" readonly="1" filename="report_filename"/>
+                    </group>
                     <footer>
-                        <button name="print_report" type="object" string="Print Report" class="btn-primary"/>
-                        <button string="Cancel" class="btn-default" special="cancel"/>
+                        <button name="action_print_report" type="object" string="Print Report" class="btn-primary" attrs="{'invisible':[('report_printed','=',True)]}"/>
+                        <button string="Cancel" class="btn-default" special="cancel" attrs="{'invisible':[('report_printed','=',True)]}"/>
+                        <button string="Close" class="btn-primary" special="cancel" attrs="{'invisible':[('report_printed','=',False)]}"/>
                     </footer>
                 </form>
             </field>
@@ -29,7 +35,7 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem  id="menu_article_transaction" name="Article Transaction" action="act_wizard_report_article_transaction" parent="menu_stock_opname_report"/> -->
+        <menuitem  id="menu_article_transaction" name="Article Transaction" action="act_wizard_report_article_transaction" groups="stock.group_stock_manager,group_stock_supervisor" parent="menu_stock_opname_report"/>
 
     </data>
 </openerp>

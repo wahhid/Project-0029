@@ -14,7 +14,7 @@ class article_transaction_per_gondola(report_sxw.rml_parse):
     def _get_stock_inventory_trans_lines(self, trans_id, gondola_ids):
         line_obj = self.pool.get('stock.inventory.periode.line')
         args = [('stock_inventory_trans_id','=', trans_id), ('gondola_id','in', gondola_ids)]
-        line_ids = line_obj.search(self.cr, self.uid, args)
+        line_ids = line_obj.search(self.cr, self.uid, args, order='create_date asc')
 
     def _get_trans_line(self, line_id):
         line_obj = self.pool.get('stock.inventory.periode.line')

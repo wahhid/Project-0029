@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Export All Data Wizard form -->
+        <record id="view_export_all_data" model="ir.ui.view">
+            <field name="name">export.all.data.form</field>
+            <field name="model">export.all.data</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Import Product">
+                    <field name="iface_generated" invisible="1"/>
+                    <group>
+                        <field name="stock_inventory_periode_id"/>
+                    </group>
+                    <group attrs="{'invisible':[('iface_generated','=', False)]}">
+                        <field name="product_attachment_filename" invisible="1"/>
+                        <field name="product_attachment" readonly="1" filename="product_attachment_filename"/>
+                        <field name="gondola_attachment_filename" invisible="1"/>
+                        <field name="gondola_attachment" reaodnly="1" filename="gondola_attachment_filename"/>
+                        <field name="source_attachment_filename" invisible="1"/>
+                        <field name="source_attachment" reaodnly="1" filename="source_attachment_filename"/>
+                        <field name="periode_trans_attachment_filename" invisible="1"/>
+                        <field name="periode_trans_attachment" readonly="1" filename="periode_trans_attachment_filename"/>
+                    </group>
+                    <separator string="" colspan="4"/>
+                    <footer>
+                        <button name="action_export" class="btn-primary" string="Export" type="object" attrs="{'invisible':[('iface_generated','=',True)]}"/>
+                        <button class="oe_highlight" special="cancel" string="Cancel" attrs="{'invisible':[('iface_generated','=',True)]}"/>
+                        <button string="Close" class="btn-primary" special="cancel" attrs="{'invisible':[('iface_generated','=',False)]}"/>
+                    </footer>
+               </form>
+            </field>
+        </record>
+
+        <!--  Action of Import Gondola wizard -->
+
+        <record id="action_export_all_data" model="ir.actions.act_window">
+            <field name="name">Export All Data</field>
+            <field name="res_model">export.all.data</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+           <field name="view_id" ref="view_export_all_data"/>
+           <field name="target">new</field>
+        </record>
+
+        <menuitem
+            action="action_export_all_data" id="menu_all_data_export" name="All Data Export"
+            parent="menu_stock_opname_export"
+            groups="stock.group_stock_manager" sequence="1"/>
+<!--     <menuitem  id="menu_import_inventory" name="Import Inventory" action="action_import_inventory" parent="stock.menu_stock_inventory_control"/> -->
+    </data>
+</openerp>

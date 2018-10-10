@@ -1,0 +1,19 @@
+
+
+ISSUE: 26-03-2018
+
+1. Input nomor gondola bisa menggunakan huruf kecil dan kapital,
+2. Desimal point menggunakan titik (.) memudahkan penginput,
+3. Print hasil inputan per gondola tidak perlu pilih periode ( yg mucul hanya periode yg berstatus Open ),
+4. Hasil print ount per gondola pada second transaction masih acak urutan nya, harap sama dengan urutan scan penginput (first transaction sudah benar),
+5. Data Real Qty tidak muncul setelah selesai dicalculate,
+6. Article Master, Column Article terisi Mdse. Category,
+7. Alur transaksi input stock opname bisa dilakukan tanpa menunggu PID diupload,
+8. Delete data PID periode sebelumnya (Closed) belum bisa dilakukan semua (tidak show), maksimal hanya bisa per 2.000 row.
+
+ISSUE: 25-03-2018
+
+1. Report (PDF) Type Per Product Category Detail Error
+2. Report (PDF) Type Per Product Category Summary Error
+3. Report (XLSX) Type Per Product Category Detail Error
+4. Report (XLSX) Type Per Product Category Summary Error

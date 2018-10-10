@@ -1,0 +1,23 @@
+
+How to - Periode Onpame
+
+1. Digunakan untuk memulai opname pada periode tertentu
+2. Define periode opname
+3. Upload Soure Data SAP ke dalam periode
+4. Lakukan transaksi opname sampai selesai
+5. Calculate transaksi opname
+6. Download data SAP
+
+How to - PDT
+
+1. login ke website pdt
+2. Masukan Username dan Password
+3. Pilih Periode Opname
+4. Masukan informasi Gondola
+5. Start Opname dengan PDT
+6.
+
+Report
+
+1. Product By Gondola
+2.

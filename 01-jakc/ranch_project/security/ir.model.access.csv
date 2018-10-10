@@ -2,3 +2,23 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_stock_warehouse_manager,stock.warehouse.manager,model_stock_warehouse,stock.group_stock_manager,1,1,1,1
 access_stock_warehouse_user,stock.warehouse.user,model_stock_warehouse,base.group_user,1,0,0,0
 
+access_gondola_manager,gondola.manager,model_gondola,stock.group_stock_manager,1,1,1,1
+access_gondola_supervisor,gondola.supervisor,model_gondola,base.group_user,1,1,1,1
+access_gondola_user,gondola.user,model_gondola,base.group_user,1,0,0,0
+
+access_stock_inventory_periode_manager,stock.inventory.periode.manager,model_stock_inventory_periode,stock.group_stock_manager,1,1,1,1
+access_stock_inventory_periode_supervisor,stock.inventory.periode.supervisor,model_stock_inventory_periode,base.group_user,1,1,1,1
+access_stock_inventory_periode_user,stock.inventory.periode.user,model_stock_inventory_periode,base.group_user,1,0,0,0
+
+access_stock_inventory_source_manager,stock.inventory.source.manager,model_stock_inventory_source,stock.group_stock_manager,1,1,1,1
+access_stock_inventory_source_supervisor,stock.inventory.source.supervisor,model_stock_inventory_source,base.group_user,1,1,1,1
+access_stock_inventory_source_user,stock.inventory.source.user,model_stock_inventory_source,base.group_user,1,0,0,0
+
+access_stock_inventory_trans_manager,stock.inventory.trans.manager,model_stock_inventory_trans,stock.group_stock_manager,1,1,1,1
+access_stock_inventory_trans_supervisor,stock.inventory.trans.supervisor,model_stock_inventory_trans,base.group_user,1,1,1,1
+access_stock_inventory_trans_user,stock.inventory.trans.user,model_stock_inventory_trans,base.group_user,1,1,1,0
+
+access_stock_inventory_trans_line_manager,stock.inventory.trans.line.manager,model_stock_inventory_trans_line,stock.group_stock_manager,1,1,1,1
+access_stock_inventory_trans_line_supervisor,stock.inventory.trans.line.supervisor,model_stock_inventory_trans_line,base.group_user,1,1,1,1
+access_stock_inventory_trans_line_user,stock.inventory.trans.line.user,model_stock_inventory_trans_line,base.group_user,1,1,1,0
+

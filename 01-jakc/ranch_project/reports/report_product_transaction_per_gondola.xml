@@ -36,76 +36,80 @@
 
         <template id="report_producttransactionpergondola">
             <t t-call="report.html_container">
-                <t t-call="ranch_project.product_transaction_per_gondola_external_layout">
-                    <div class="page">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Seq</th>
-                                    <th>Diff</th>
-                                    <th>Gondola</th>
-                                    <th>EAN</th>
-                                    <th>Article</th>
-                                    <th>Product Name</th>
-                                    <th>Quantity</th>
-                                    <th>Exist</th>
-                                    <th>Stock</th>
-                                </tr>
-                            </thead>
-                            <tbody class="invoice_tbody">
-                                <t t-if="data['form']['report_gondola_filter']== '01'">
-                                    <t t-set="gondolas" t-value="get_gondolas()"/>
-                                </t>
-                                <t t-if="data['form']['report_gondola_filter']== '02'">
-                                    <t t-set="gondolas" t-value="get_gondola_range(data['form']['gondola_start_code'],data['form']['gondola_end_code'])"/>
-                                </t>
-                                <t t-if="data['form']['report_gondola_filter']== '03'">
-                                    <t t-set="gondolas" t-value="get_gondola_selection(data['form']['gondola_ids'])"/>
-                                </t>
-                                <t t-foreach="gondolas" t-as="gondola_id">
-                                    <t t-foreach="get_gondola(gondola_id['id'])" t-as="gondola">
-                                        <tr>
-                                            <td colspan="8"><strong>Gondola : (<t t-esc="gondola['code']"/>) <t t-esc="gondola['name']"/></strong></td>
-                                        </tr>
-                                        <t t-set="no" t-value="0"/>
-                                        <t t-if="data['form']['report_product_filter'] == '01'">
-                                            <t t-set="lines" t-value="get_stock_inventory_trans_line(data['form']['stock_inventory_periode_id'][0], gondola['id'], data['form']['report_category'])"/>
-                                        </t>
-                                        <t t-if="data['form']['report_product_filter'] == '03'">
-                                            <t t-set="lines" t-value="get_stock_inventory_trans_line(data['form']['stock_inventory_periode_id'][0], gondola['id'], data['form']['report_category'], data['form']['product_ids'])"/>
-                                        </t>
-                                        <t t-foreach="lines" t-as="line">
-                                            <t t-set="no" t-value="no + 1"/>
-                                            <tr>
-                                                <td><t t-esc="no"/></td>
-                                                <td>
-                                                    <t t-set="article_diff" t-value="get_article_diff(line['article_id'])"/>
-                                                    <t t-if="article_diff">
-                                                        <span>*</span>
-                                                    </t>
-                                                </td>
-                                                <td><span t-esc="gondola['code']"/></td>
-                                                <td><span t-esc="line['ean']"/></td>
-                                                <td><span t-esc="line['article_id']"/></td>
-                                                <td><span t-esc="line['product_name']"/></td>
-                                                <t t-if="line['step'] == '1'">
-                                                    <td><span t-esc="line['qty1']"/></td>
-                                                </t>
-                                                <t t-if="line['step'] == '2'">
-                                                    <td><span t-esc="line['qty2']"/></td>
-                                                </t>
-                                                <t t-if="line['step'] == '3'">
-                                                    <td><span t-esc="line['qty3']"/></td>
-                                                </t>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        </t>
+                <t t-if="data['form']['report_gondola_filter']== '01'">
+                    <t t-set="gondolas" t-value="get_gondolas(data['form']['stock_inventory_periode_id'][0])"/>
+                </t>
+                <t t-if="data['form']['report_gondola_filter']== '02'">
+                    <t t-set="gondolas" t-value="get_gondola_range(data['form']['gondola_start_code'],data['form']['gondola_end_code'])"/>
+                </t>
+                <t t-if="data['form']['report_gondola_filter']== '03'">
+                    <t t-set="gondolas" t-value="get_gondola_selection(data['form']['gondola_ids'])"/>
+                </t>
+                <t t-foreach="gondolas" t-as="gondola_id">
+                    <t t-set="gondola" t-value="get_gondola(gondola_id['id'])[0]"/>
+                    <t t-call="ranch_project.product_transaction_per_gondola_external_layout">
+                        <div class="page">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Seq</th>
+                                        <th>Diff</th>
+                                        <th>Gondola</th>
+                                        <th>EAN</th>
+                                        <th>Article</th>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>Exist</th>
+                                        <th>Stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="invoice_tbody">
+
+                                    <tr>
+                                        <td colspan="9"><strong>Gondola : (<t t-esc="gondola['code']"/>) <t t-esc="gondola['name']"/></strong></td>
+                                    </tr>
+                                    <t t-set="no" t-value="0"/>
+                                    <t t-if="data['form']['report_product_filter'] == '01'">
+                                        <t t-set="lines" t-value="get_stock_inventory_trans_line(data['form']['stock_inventory_periode_id'][0], gondola['id'], data['form']['report_category'])"/>
                                     </t>
-                                </t>
-                            </tbody>
-                        </table>
-                    </div>
+                                    <t t-if="data['form']['report_product_filter'] == '03'">
+                                        <t t-set="lines" t-value="get_stock_inventory_trans_line(data['form']['stock_inventory_periode_id'][0], gondola['id'], data['form']['report_category'], data['form']['product_ids'])"/>
+                                    </t>
+                                    <t t-foreach="lines" t-as="line">
+                                        <t t-set="no" t-value="no + 1"/>
+                                        <tr>
+                                            <td><t t-esc="no"/></td>
+                                            <td>
+                                                <t t-if="get_article_diff(data['form']['stock_inventory_periode_id'][0],line['article_id'])">
+                                                    <span>*</span>
+                                                </t>
+                                            </td>
+                                            <td><span t-esc="gondola['code']"/></td>
+                                            <td><span t-esc="line['ean']"/></td>
+                                            <td><span t-esc="line['article_id']"/></td>
+                                            <td><span t-esc="line['product_name']"/></td>
+                                            <t t-if="line['step'] == '1'">
+                                                <td><span t-esc="line['qty1']"/></td>
+                                            </t>
+                                            <t t-if="line['step'] == '2'">
+                                                <td><span t-esc="line['qty2']"/></td>
+                                            </t>
+                                            <t t-if="line['step'] == '3'">
+                                                <td><span t-esc="line['qty3']"/></td>
+                                            </t>
+                                            <td>
+                                                <t t-if="not line['stock_inventory_trans_source_id']">
+                                                    <span>*</span>
+                                                </t>
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
                 </t>
             </t>
         </template>
@@ -153,12 +157,12 @@
                                     <th>Seq</th>
                                     <th>Gondola Code</th>
                                     <th>Gondola Name</th>
-                                    <th>Quantity</th>
+                                    <th>Qty</th>
                                 </tr>
                             </thead>
                             <tbody class="invoice_tbody">
                                 <t t-if="data['form']['report_product_filter']== '01'">
-                                    <t t-set="products" t-value="get_products()"/>
+                                    <t t-set="products" t-value="get_products(data['form']['stock_inventory_periode_id'][0])"/>
                                 </t>
                                 <t t-if="data['form']['report_product_filter']== '03'">
                                     <t t-set="products" t-value="get_product_selection(data['form']['product_ids'])"/>
@@ -170,14 +174,15 @@
                                         </tr>
                                         <t t-set="no" t-value="0"/>
                                         <t t-if="data['form']['report_gondola_filter'] == '01'">
-                                            <t t-set="lines" t-value="get_stock_inventory_trans_line(data['form']['stock_inventory_periode_id'][0], product['id'], data['form']['report_category'])"/>
+                                            <t t-set="gondolas" t-value="get_gondolas()"/>
                                         </t>
                                         <t t-if="data['form']['report_gondola_filter'] == '02'">
-                                            <t t-set="lines" t-value="get_stock_inventory_trans_line(data['form']['stock_inventory_periode_id'][0], product['id'], data['form']['report_category'])"/>
+                                            <t t-set="gondolas" t-value="get_gondola_range(data['form']['gondola_start_code'],data['form']['gondola_end_code'])"/>
                                         </t>
                                         <t t-if="data['form']['report_gondola_filter'] == '03'">
-                                            <t t-set="lines" t-value="get_stock_inventory_trans_line(data['form']['stock_inventory_periode_id'][0], gondola['id'], data['form']['report_category'], data['form']['product_ids'])"/>
+                                            <t t-set="gondolas" t-value="data['form']['gondola_ids']"/>
                                         </t>
+                                        <t t-set="lines" t-value="get_stock_inventory_trans_line(data['form']['stock_inventory_periode_id'][0], product['id'], data['form']['report_category'], gondolas)"/>
                                         <t t-foreach="lines" t-as="line">
                                             <t t-set="no" t-value="no + 1"/>
                                             <tr>

@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="windows-1252"?>
 <openerp>
     <data>
-        <template id="assets_backend" name="ranch_project_report_assets" inherit_id="report.assets_backend">
-            <xpath expr="." position="inside">
-                <link rel="stylesheet" href="/ranch_project/static/src/css/ranch_project_report.css"/>
-            </xpath>
-        </template>
-
+        
         <template id="warehouse_opname_index">
             <html>
                 <head>
@@ -20,7 +15,7 @@
                     <form id="form" action="login" method="POST">
                         <table border="0">
                             <tr>
-                                <td>User ID</td>
+                                <td>NIK</td>
                                 <td>:</td>
                                 <td><input type="text" name="username" value="" /></td>
                             </tr>
@@ -118,6 +113,10 @@
                                     <input type="text" name="gondolacode"/>
                                 </td>
                             </tr>
+                            <tr t-if="msg">
+                                <td></td>
+                                <td><font color="red"><t t-esc="msg"/></font></td>
+                            </tr>
                             <tr>
                                 <td></td>
                                 <td></td>
@@ -163,15 +162,17 @@
                             <td>Progress</td>
                             <td>:</td>
                             <td>
-                                <t t-if="request.session.step == '1'">
-                                    <span>First Collection</span>
-                                </t>
-                                <t t-if="request.session.step == '2'">
-                                    <span>Second Collection</span>
-                                </t>
-                                <t t-if="request.session.step == '3'">
-                                    <span>Third Collection</span>
-                                </t>
+                                <font color="red">
+                                    <t t-if="request.session.step == '1'">
+                                        <span>First Collection</span>
+                                    </t>
+                                    <t t-if="request.session.step == '2'">
+                                        <span>Second Collection</span>
+                                    </t>
+                                    <t t-if="request.session.step == '3'">
+                                        <span>Third Collection</span>
+                                    </t>
+                                </font>
                             </td>
                         </tr>
                         <tr>
@@ -209,7 +210,7 @@
             <html>
                 <head>
                     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-                    <title>JSP Page</title>
+                    <title>Stock System - Ranch Market</title>
                 </head>
                 <body>
                     <form method="POST" action="/warehouse/opname/trans/qty">
@@ -233,6 +234,22 @@
                                 </td>
                             </tr>
                             <tr>
+                            <td>Progress</td>
+                                <td>
+                                    <font color="red">
+                                        <t t-if="request.session.step == '1'">
+                                            <span>First Collection</span>
+                                        </t>
+                                        <t t-if="request.session.step == '2'">
+                                            <span>Second Collection</span>
+                                        </t>
+                                        <t t-if="request.session.step == '3'">
+                                            <span>Third Collection</span>
+                                        </t>
+                                    </font>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>Last</td>
                                 <td><t t-esc="request.session.lastproduct"/></td>
                             </tr>
@@ -242,7 +259,7 @@
                             </tr>
                             <tr t-if="msg">
                                 <td></td>
-                                <td><t t-esc="msg"/></td>
+                                <td><font color="red"><t t-esc="msg"/></font></td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -296,7 +313,7 @@
                                     <tr>
                                         <td>Quantity</td>
                                         <td>
-                                            <input type="text" t-attf-name="{{trans_line.id}}" t-attf-value="{{trans_line.qty1}}"/>
+                                            <input type="text" t-attf-name="{{trans_line.id}}" t-attf-value="{{trans_line.qty2}}"/>
                                         </td>
                                     </tr>
                                 </t>
@@ -306,14 +323,14 @@
                                     <tr>
                                         <td>Quantity</td>
                                         <td>
-                                            <input type="text" t-attf-name="{{trans_line.id}}" t-attf-value="{{trans_line.qty2}}"/>
+                                            <input type="text" t-attf-name="{{trans_line.id}}" t-attf-value="{{trans_line.qty3}}"/>
                                         </td>
                                     </tr>
                                 </t>
                             </t>
                             <tr t-if="msg">
                                 <td></td>
-                                <td><t t-esc="msg"/></td>
+                                <td><font color="red"><t t-esc="msg"/></font></td>
                             </tr>
                             <tr>
                                 <td></td>

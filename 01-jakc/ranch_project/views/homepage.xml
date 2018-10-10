@@ -1,0 +1,7 @@
+<odoo>
+    <template id="homepage_extend" inherit_id="website.homepage">
+      <xpath expr="//div[@class='main']" position='inside'>
+        <h1>FOO 2</h1>
+      </xpath>
+    </template>
+</odoo>

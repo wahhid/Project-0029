@@ -14,6 +14,7 @@ class ProductTemplate(models.Model):
     ean = fields.Char('Ean', size=100, index=True)
     article_id = fields.Char('Article #', size=100, index=True)
     marchandise_id = fields.Char('Marchandise #', size=100, index=True)
+    sap_uom_id = fields.Char('Uom ()', size=100, index=True)
 
 
 class ProductImport(models.Model):
@@ -42,7 +43,7 @@ class ProductImport(models.Model):
         #if self.delimeter:
         #    delimeter = str(self.delimeter)
         #else:
-        delimeter = ';'
+        delimeter = ','
 
         reader = csv.reader(file_input, delimiter=delimeter, lineterminator='\r\n')
 
@@ -72,21 +73,23 @@ class ProductImport(models.Model):
                             marchandise_id,
                             article_id,
                             uom_id,
+                            sap_uom_id,
                             uom_po_id, 
                             tracking, 
                             active) 
-                            VALUES ('{}', '{}', '{}', {}, '{}', {} ,{} , '{}', '{}', {}) RETURNING id
-                        """\
-                        .format(str(row[3].replace("'"," ").decode('unicode_escape').encode('ascii', 'ignore')),
-                                str(row[0]),
-                                'product',
-                                str(1),
-                                str(row[2]),
-                                str(row[1]),
-                                str(1),
-                                str(1),
-                                'none',
-                                'true')
+                            VALUES ('{}', '{}', '{}', {}, '{}', {} , {}, '{}' , '{}', '{}', {}) RETURNING id
+                        """ \
+                        .format(str(row[3].replace("'", " ")).decode('unicode_escape').encode('ascii', 'ignore'),
+                        str(row[0]),
+                        'product',
+                        str(1),
+                        str(row[2]),
+                        str(row[1]),
+                        str(1),
+                        str(row[4]),
+                        str(1),
+                        'none',
+                        'true')
                 self.env.cr.execute(strsql)
 
                 id = self.env.cr.fetchone()[0]
@@ -110,7 +113,7 @@ class ProductImport(models.Model):
                             categ_id={},
                             marchandise_id='{}',
                             article_id='{}',
-                            uom_id={},
+                            sap_uom_id='{}',
                             uom_po_id={},
                             tracking='{}',
                             active={}
@@ -122,7 +125,7 @@ class ProductImport(models.Model):
                                 str(1),
                                 str(row[2]),
                                 str(row[1]),
-                                str(1),
+                                str(row[4]),
                                 str(1),
                                 'none',
                                 'true',

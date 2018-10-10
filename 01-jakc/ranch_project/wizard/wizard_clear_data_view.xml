@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Import Product Wizard form -->
+        <record id="wizard_clear_data_form" model="ir.ui.view">
+            <field name="name">wizard.clear.data.form</field>
+            <field name="model">wizard.clear.data</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Clear Data">
+                    <group>
+                        <field name="iface_clear_data"/>
+                    </group>
+                    <footer>
+                        <button class="oe_highlight" special="cancel" string="Cancel"/>
+                        <button name="process_clear_data" string="Process" type="object"/>
+                    </footer>
+               </form>
+            </field>
+        </record>
+
+        <!--  Action of Clear Data wizard -->
+        <record id="action_clear_data" model="ir.actions.act_window">
+            <field name="name">Clear Data</field>
+            <field name="res_model">wizard.clear.data</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="wizard_clear_data_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem  id="menu_clear_data"
+                   name="Clear Data"
+                   action="action_clear_data"
+                   parent="menu_stock_opname_clean"
+                   groups="stock.group_stock_manager"
+                   sequence="1"/>
+
+    </data>
+</openerp>

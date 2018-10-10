@@ -16,6 +16,10 @@ _logger = logging.getLogger(__name__)
 
 class WebsiteWarehoue(http.Controller):
 
+    def get_product(self, product_id):
+        stock_warehouse_obj = http.request.env['product.template']
+
+
     @http.route('/csv/download/sap/<int:periode_id>/', auth='public')
     def csvdownload(self, periode_id, **kw):
         return http.request.env['stock.inventory.periode']._sap_csv_download({'periode_id': periode_id})
@@ -100,7 +104,7 @@ class WebsiteWarehoue(http.Controller):
         stock_inventory_trans_obj = http.request.env['stock.inventory.trans']
         gondola_obj = http.request.env['gondola']
         gondola_code = post['gondolacode']
-        args = [('code','=', gondola_code)]
+        args = [('code','=', gondola_code.upper())]
         gondola_ids = gondola_obj.sudo().search(args)
         if len(gondola_ids) > 0:
             gondola = gondola_ids[0]
@@ -124,7 +128,8 @@ class WebsiteWarehoue(http.Controller):
                 request.session['step'] = res.step
             return request.render('ranch_project.warehouse_opname_gondola_result', datas)
         else:
-            return ""
+            datas.update({'msg': 'Gondola not found'})
+            return request.render('ranch_project.warehouse_opname_gondola_find', datas)
 
     @http.route('/warehouse/opname/trans/product', type='http', auth='public', csrf=False)
     def trans_find(self):
@@ -156,6 +161,7 @@ class WebsiteWarehoue(http.Controller):
         if product_template:
             request.session['productid'] = product_template[0].id
             request.session['productname'] = product_template[0].name
+            request.session['sapuomid'] = product_template[0].sap_uom_id
             if product_template[0].article_id:
                 request.session['article_id'] = product_template[0].article_id
                 stock_inventory_trans_source_ids = stock_inventory_trans_source_obj.sudo().search([('article_id','=', product_template[0].article_id)])
@@ -190,7 +196,7 @@ class WebsiteWarehoue(http.Controller):
                     _logger.info('Source Not Found')
                     if request.session['step'] != '1':
                         stock_inventory_trans_line_args = [('stock_inventory_trans_id','=', request.session['transid']),('product_id','=', product_template[0].id)]
-                        stock_inventory_trans_line_ids = stock_inventory_trans_line_obj.sudo().search(stock_inventory_trans_line_args)
+                        stock_inventory_trans_line_ids = stock_inventory_trans_line_obj.sudo().search(stock_inventory_trans_line_args, order='create_date')
                         if len(stock_inventory_trans_line_ids) > 0:
                             _logger.info('Collection Found')
                             datas.update({'trans_lines': stock_inventory_trans_line_ids})
@@ -229,15 +235,37 @@ class WebsiteWarehoue(http.Controller):
         _logger.info(post)
         allow_process = False
         if request.session['step'] == '1':
-            qty = float(post['qty'])
-            if qty < 10000.0:
-                allow_process = True;
+            try:
+                qty = float(post['qty'])
+            except ValueError:
+                datas.update({'msg': 'Quantity Error'})
+                datas.update({'trans_lines': []})
+                return request.render('ranch_project.warehouse_opname_trans_qty', datas)
+
+            if qty >= 0 and qty < 10000.0:
+                if request.session['sapuomid'] != 'KG':
+                    if qty%1 == 0:
+                        allow_process = True
+                    else:
+                        allow_process = False
+                else:
+                    allow_process = True
         else:
             for key in post.keys():
-                if float(post.get(key)) < 10000.0:
-                    allow_process = True
-                else:
-                    allow_process = False
+                try:
+                    qty = float(post.get(key))
+                except ValueError:
+                    datas.update({'msg': 'Quantity Error'})
+                    datas.update({'trans_lines': []})
+                    return request.render('ranch_project.warehouse_opname_trans_qty', datas)
+                if qty >= 0 and qty < 10000.0:
+                    if request.session['sapuomid'] != 'KG':
+                        if qty%1 == 0:
+                            allow_process = True
+                        else:
+                            allow_process = False
+                    else:
+                        allow_process = True
 
         if allow_process:
             if request.session['step'] == '1':
@@ -266,8 +294,8 @@ class WebsiteWarehoue(http.Controller):
                     vals = {}
                     vals.update({'qty2': float(post.get(key))})
                     trans_line.write(vals)
-                args = [('stock_inventory_trans_id', '=', request.session.transid),
-                        ('gondola_id', '=', request.session.gondolaid)]
+
+                args = [('stock_inventory_trans_id', '=', request.session.transid),('gondola_id', '=', request.session.gondolaid)]
                 stock_inventory_trans_line_ids = stock_inventory_trans_line_obj.sudo().search(args, order='date desc')
                 if len(stock_inventory_trans_line_ids) > 0:
                     _logger.info('Find Last Product')

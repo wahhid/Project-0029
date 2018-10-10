@@ -33,7 +33,11 @@
         </record>
 
 
-        <menuitem  id="menu_product_transaction_per_gondola" name="Product By Gondola" action="act_wizard_report_product_per_gondola" parent="menu_stock_opname_report"/> -->
+        <menuitem  id="menu_product_transaction_per_gondola"
+                   name="Product By Gondola"
+                   action="act_wizard_report_product_per_gondola"
+                   groups="stock.group_stock_manager,group_stock_supervisor"
+                   parent="menu_stock_opname_report"/>
 
     </data>
 </openerp>
